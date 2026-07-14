@@ -1,25 +1,33 @@
-#include "imgui.h" // 1. ImGui ෆයිල් එක මෙතනින් ලින්ක් කරනවා
+#include "imgui.h"
+#include <iostream>
+#include <vector>
 
-// මේක අපි මුලින්ම False (Off) කරලා තියන්නේ
-bool show_esp_lines = false; 
+// මෙතනට ඔයාගේ Memory Patching ලයිබ්‍රරි එක අවශ්‍යයි (උදා: kMinHook හෝ අදාළ Hooking engine එක)
+// මේක නිකන්ම සැකිල්ලක් විතරයි, ගේම් එකේ Memory වෙතට ලියන්න විශේෂිත වූ Hook එකක් ඕනේ.
 
-void DrawOurMenu() {
-    // Menu එක පටන් ගන්නවා
-    ImGui::Begin("My Custom Mod Menu"); 
+bool aimbotEnabled = false;
+
+// ඔයා දුන්නු AOB සහ Offsets
+const char* aimAOB = "01 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 01 00 00 00 00 00 ?? ?? ?? ?? ?? ?? 01 00 00 00 00 00 00 00 ?? ?? 00 00 00 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ?? ?? 00 00 00 00 00 00 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 00 00 00 00 ?? ?? ?? ?? ?? ?? ?? ?? 00 00 00 00 00 00 00 00 ?? ?? 00 00 00 00 00 00 ?? ?? ?? ?? 00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF";
+
+void ApplyAimbot(bool enable) {
+    // මෙතනදී තමයි ඔයාගේ Memory Patching code එක ලියන්න ඕනේ
+    // උදාහරණයක් ලෙස: 
+    // if(enable) { PatchMemory(Address, WriteValue); }
+    // else { RestoreMemory(Address); }
     
-    // Menu එක ඇතුලේ පොඩි මාතෘකාවක්
-    ImGui::Text("Player Settings"); 
-    
-    // On/Off කරන Checkbox එක
-    ImGui::Checkbox("Enable ESP Lines", &show_esp_lines); 
-    
-    ImGui::End(); // Menu එක ඉවරයි
+    // Read: 0x164, Write: 0x168 පාවිච්චි කරන ලොජික් එක මෙතනට දාන්න.
+    std::cout << "Aimbot status: " << (enable ? "ON" : "OFF") << std::endl;
 }
 
-// 2. අර එළියේ තිබ්බ if condition එක අපි අලුත් Function එකක් ඇතුලට දැම්මා
-void RenderOurHacks() {
-    if (show_esp_lines == true) {
-        // පස්සේ මෙතනට අපි ඇත්තම ESP අඳින Code එක දානවා
-        // දැනට Error එකක් එන නිසා DrawESPLine එක අයින් කරලා තියෙන්නේ
+void DrawOurMenu() {
+    ImGui::Begin("My Custom Mod Menu");
+
+    if (ImGui::Checkbox("Aimbot (Enable)", &aimbotEnabled)) {
+        ApplyAimbot(aimbotEnabled);
     }
+
+    ImGui::Text("Aimbot offsets configured!");
+    
+    ImGui::End();
 }

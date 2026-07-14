@@ -1,0 +1,28 @@
+name: Build iOS dylib
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Configure CMake for iOS
+      # මෙතනදී තමයි අපි CMAKE_SYSTEM_NAME=iOS කියලා දීලා මේක iPhone එකට ගැලපෙන්න හදන්න කියන්නේ
+      run: cmake -B build -G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=14.0
+
+    - name: Build dylib
+      run: cmake --build build --config Release
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: MyModMenu-iOS-Library
+        path: build/Release-iphoneos/libMyModMenu.dylib
